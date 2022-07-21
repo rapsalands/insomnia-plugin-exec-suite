@@ -2,7 +2,10 @@
   "name": "insomnia-plugin-exec-suite",
   "version": "1.0.0",
   "description": "An Insomnia plugin for running all or conditional requests in a folder.",
-  "repository": "https://github.com/rapsalands/insomnia-plugin-exec-suite.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rapsalands/insomnia-plugin-exec-suite.git"
+  },
   "license": "Apache-2.0",
   "insomnia": {
     "name": "requests-exec-suite",
@@ -12,5 +15,22 @@
     }
   },
   "main": "main.js",
-  "unlisted": false
+  "unlisted": false,
+  "bugs": {
+    "url": "https://github.com/rapsalands/insomnia-plugin-exec-suite/issues"
+  },
+  "homepage": "https://github.com/rapsalands/insomnia-plugin-exec-suite#readme",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "insomnia",
+    "postman",
+    "request",
+    "skip",
+    "stop",
+    "wait",
+    "delay"
+  ],
+  "author": "Sandy"
 }
