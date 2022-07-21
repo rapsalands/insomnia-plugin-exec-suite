@@ -38,7 +38,7 @@ module.exports.requestGroupActions = [
       const css = getTableTemplate();
       const html = `<html><head><style>${css}</style></head><body ><table bgcolor="#282D35">${results.join('\n')}</table></body></html>`;
 
-      context.app.showGenericModalDialog('Results', { html });
+      context.app.showGenericModalDialog('REQUESTS EXECUTION SUMMARY', { html });
     },
   }
 ];
