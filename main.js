@@ -8,40 +8,53 @@ module.exports.requestGroupActions = [
   {
     label: 'Execute All Requests',
     action: async (context, data) => {
-      const { requests } = data;
-
-      let results = [];
-      results.push(getRowTemplate());
-      for (const request of requests) {
-
-        const { tags, actualName } = getComponentsByEdgeTag(request);
-        if(alreadyTagged(tags, stopText)) {
-          console.log('Stopped.');
-          break;
-        }
-        if(alreadyTagged(tags, skipText)) {
-          console.log('Skipped.');
-          continue;
-        }
-        const response = await context.network.sendRequest(request);
-        const rowStr = constructRequestRow(actualName, request, response);
-        results.push(rowStr);
-
-        if(alreadyTagged(tags, waitText)) {
-          console.log('Waiting.');
-          const tagValue = findTagValue(tags, waitText);
-          results.push(constructTextRow(`Waiting for ${tagValue} seconds after running ${actualName}.`));
-          await delay((+tagValue) * 1000);
-        }
+      try {
+        await executeAllRequests(context, data);
+      } catch {
+        context.app.showGenericModalDialog("Error", { html: "Something went wrong. Please contact author." });
       }
-
-      const css = getTableTemplate();
-      const html = `<html><head><style>${css}</style></head><body ><table bgcolor="#282D35">${results.join('\n')}</table></body></html>`;
-
-      context.app.showGenericModalDialog('REQUESTS EXECUTION SUMMARY', { html });
     },
   }
 ];
+
+async function executeAllRequests(context, data) {
+  const { requests } = data;
+
+  let results = [];
+  results.push(getRowTemplate());
+  for (const request of requests) {
+
+    const { tags, actualName } = getComponentsByEdgeTag(request);
+    try {
+      if (alreadyTagged(tags, stopText)) {
+        console.log('Stopped.');
+        break;
+      }
+      if (alreadyTagged(tags, skipText)) {
+        console.log('Skipped.');
+        continue;
+      }
+      const response = await context.network.sendRequest(request);
+      const rowStr = constructRequestRow(actualName, request, response);
+      results.push(rowStr);
+
+      if (alreadyTagged(tags, waitText)) {
+        console.log('Waiting.');
+        const tagValue = findTagValue(tags, waitText);
+        results.push(constructTextRow(`Waiting for ${tagValue} seconds after running ${actualName}.`));
+        await delay((+tagValue) * 1000);
+      }
+    } catch {
+      results.push(constructTextRow(`Failed to run ${actualName.toUpperCase()}, please check the request again.`, true));
+      break;
+    }
+  }
+
+  const css = getTableTemplate();
+  const html = `<html><head><style>${css}</style></head><body ><table bgcolor="#282D35">${results.join('\n')}</table></body></html>`;
+
+  context.app.showGenericModalDialog('REQUESTS EXECUTION SUMMARY', { html });
+}
 
 function getRowTemplate() {
   return (
@@ -72,23 +85,23 @@ function getComponentsByEdgeTag(request) {
   let originalName = request.name;
   let splits = originalName.split(edgeTag);
 
-  if(splits.length < 3) {
+  if (splits.length < 3) {
     originalName = `${edgeTag}${edgeTag}${originalName}`;
     splits = originalName.split(edgeTag);
   }
 
   let tags = splits[1], actualName = splits[2];
-  return {tags, actualName};
+  return { tags, actualName };
 }
 
 function alreadyTagged(tags = "", tagToFind) {
   tags = tags.toUpperCase();
   const splits = tags.split(',');
   const tagIndex = splits.findIndex(n => n.trim() === tagToFind);
-  if(tagIndex >= 0) return true;
+  if (tagIndex >= 0) return true;
 
   // Wait can also have seconds associated. Determine it separately.
-  if(tagToFind === waitText) {
+  if (tagToFind === waitText) {
     return tags.startsWith(waitText);
   }
 
@@ -119,8 +132,9 @@ function constructRequestRow(requestName, request, response) {
   return row;
 }
 
-function constructTextRow(text) {
-  const row = `<tr><td id="td_right" colSpan=5>${text}</td></tr>`;
+function constructTextRow(text, isError) {
+  const style = isError ? "color: red; font-weight: bold;" : '';
+  const row = `<tr><td id="td_right" style="${style}" colSpan=5>${text}</td></tr>`;
   return row;
 }
 
