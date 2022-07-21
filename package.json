@@ -1,0 +1,12 @@
+{
+  "name": "insomnia-plugin-exec-suite",
+  "version": "1.0.0",
+  "description": "An Insomnia plugin for running all requests in a folder.",
+  "private": true,
+  "license": "Apache-2.0",
+  "insomnia": {
+    "name": "exec-suite",
+    "description": ""
+  },
+  "main": "main.js"
+}
