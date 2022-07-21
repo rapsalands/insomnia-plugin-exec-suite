@@ -9,7 +9,7 @@ An Insomnia plugin to run all or conditional requests in a folder. Via plugin, u
 ![Execute All Requests](./images/ExecuteAllRequests.PNG)
 
 2. Modify Folder run.
-We can add some attributes to each request like `WAIT`, `SKIP` and `STOP` inside double back ticks.
+We can add some attributes to each request like `WAIT`, `SKIP` and `STOP` inside double back ticks (``).
 
 ![Execute All Requests](./images/Attributes.PNG)
 
