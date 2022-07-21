@@ -6,7 +6,7 @@ const fontWhite = '#C5C5C5';
 
 module.exports.requestGroupActions = [
   {
-    label: 'Execute Requests',
+    label: 'Execute All Requests',
     action: async (context, data) => {
       const { requests } = data;
 
@@ -23,16 +23,16 @@ module.exports.requestGroupActions = [
           console.log('Skipped.');
           continue;
         }
-        if(alreadyTagged(tags, waitText)) {
-          console.log('Waiting.');
-          const tagValue = findTagValue(tags, waitText);
-          results.push(constructTextRow(`Waiting for ${tagValue} seconds before running ${actualName}.`));
-          await delay((+tagValue) * 1000);
-        }
-
         const response = await context.network.sendRequest(request);
         const rowStr = constructRequestRow(actualName, request, response);
         results.push(rowStr);
+
+        if(alreadyTagged(tags, waitText)) {
+          console.log('Waiting.');
+          const tagValue = findTagValue(tags, waitText);
+          results.push(constructTextRow(`Waiting for ${tagValue} seconds after running ${actualName}.`));
+          await delay((+tagValue) * 1000);
+        }
       }
 
       const css = getTableTemplate();
