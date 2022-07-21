@@ -2,11 +2,14 @@
   "name": "insomnia-plugin-exec-suite",
   "version": "1.0.0",
   "description": "An Insomnia plugin for running all requests in a folder.",
-  "private": true,
+  "repository": "https://github.com/rapsalands/insomnia-plugin-exec-suite.git",
   "license": "Apache-2.0",
   "insomnia": {
-    "name": "exec-suite",
-    "description": ""
+    "name": "requests-exec-suite",
+    "description": "An Insomnia plugin for running all requests in a folder.",
+    "publisher": {
+      "name": "Sandy"
+    }
   },
   "main": "main.js"
 }
