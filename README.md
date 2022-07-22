@@ -1,6 +1,6 @@
 # insomnia-plugin-exec-suite
 
-An Insomnia plugin to run all or conditional requests in a folder. Via plugin, user can `SKIP` a particular request, `STOP` at a particular request or can `STOP` execution at a certain request.
+An Insomnia plugin to run all or conditional requests in a folder. Via plugin, user can `SKIP` a particular request, `WAIT` after a particular request has run or can `STOP` execution at a certain request.
 
 ## Usage
 
@@ -14,13 +14,15 @@ We can add some attributes to each request like `WAIT`, `SKIP` and `STOP` inside
 ![Execute All Requests](./images/Attributes.PNG)
 
 a. `WAIT(10)`
-When running all requests in the folder, execution will wait for `10 seconds` if encountered above tag. Number of seconds can be customized by passing different number inside `WAIT` like `WAIT(5)`, `WAIT(20)` etc.
+When running all requests in the folder, execution will wait for `10 seconds` after running the request which is tagged with this attribute. Number of seconds can be customized by passing different number inside `WAIT` like `WAIT(5)`, `WAIT(20)` etc.
 
 b. `SKIP`
-When running all requests in the folder, execution will SKIP this particular request.
+When running all requests in the folder, execution will SKIP this particular request and continue to execute others as usual.
 
 c. `STOP`
-When running all requests in the folder, execution will stop at the current request.
+When running all requests in the folder, execution will stop at the current request (and current request will not be executed).
+
+We can use multiple tags separated by comma is needed.
 
 Please find the screenshot below to see the execution plan of the folder.
 
