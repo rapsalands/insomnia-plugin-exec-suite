@@ -1,6 +1,6 @@
 {
   "name": "insomnia-plugin-exec-suite",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "An Insomnia plugin for running all or conditional requests in a folder.",
   "repository": {
     "type": "git",
