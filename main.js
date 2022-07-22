@@ -32,7 +32,7 @@ async function executeAllRequests(context, data) {
       }
       if (alreadyTagged(tags, skipText)) {
         console.log('Skipped.');
-        results.push(constructTextRow(`Skipping request ${actualName.toUpperCase()}.`));
+        // results.push(constructTextRow(`Skipping request ${actualName.toUpperCase()}.`));
         continue;
       }
       const response = await context.network.sendRequest(request);
