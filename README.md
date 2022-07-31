@@ -20,7 +20,9 @@ b. `SKIP`
 When running all requests in the folder, execution will SKIP this particular request and continue to execute others as usual.
 
 c. `STOP`
-When running all requests in the folder, execution will stop at the current request (and current request will not be executed).
+When running all requests in the folder:
+    i. If `STOP` is present in front of the request name (example would be `` `STOP` Save Note``.) execution will stop at the current request (and current request will not be executed).
+    ii. If `STOP` is present in after the request name (example would be ``Save Note `STOP` ``.) execution will stop after executing current request.
 
 We can use multiple tags separated by comma is needed.
 

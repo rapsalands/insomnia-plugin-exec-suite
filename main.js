@@ -24,13 +24,13 @@ async function executeAllRequests(context, data) {
   results.push(getRowTemplate());
   for (const request of requests) {
 
-    const { tags, actualName } = getComponentsByEdgeTag(request);
+    const { firstTags, lastTags, actualName } = getComponentsByEdgeTag(request);
     try {
-      if (alreadyTagged(tags, stopText)) {
+      if (alreadyTagged(firstTags, stopText)) {
         console.log('Stopped.');
         break;
       }
-      if (alreadyTagged(tags, skipText)) {
+      if (alreadyTagged(firstTags, skipText)) {
         console.log('Skipped.');
         // results.push(constructTextRow(`Skipping request ${actualName.toUpperCase()}.`));
         continue;
@@ -39,9 +39,13 @@ async function executeAllRequests(context, data) {
       const rowStr = constructRequestRow(actualName, request, response);
       results.push(rowStr);
 
-      if (alreadyTagged(tags, waitText)) {
+      if (alreadyTagged(lastTags, stopText)) {
+        console.log('Stopped.');
+        break;
+      }
+      if (alreadyTagged(firstTags, waitText)) {
         console.log('Waiting.');
-        const tagValue = findTagValue(tags, waitText);
+        const tagValue = findTagValue(firstTags, waitText);
         results.push(constructTextRow(`Waiting for ${tagValue} seconds after running ${actualName}.`));
         await delay((+tagValue) * 1000);
       }
@@ -83,16 +87,28 @@ function getTableTemplate() {
 }
 
 function getComponentsByEdgeTag(request) {
-  let originalName = request.name;
-  let splits = originalName.split(edgeTag);
 
-  if (splits.length < 3) {
-    originalName = `${edgeTag}${edgeTag}${originalName}`;
-    splits = originalName.split(edgeTag);
+  let originalName = request.name;
+  let actualName = originalName;
+
+  const regex = /\`(.*?)\`/gi;
+  const resultMatchGroup = actualName.match(regex);
+
+  if (!resultMatchGroup) {
+    return { firstTags: '', lastTags: '', actualName };
   }
 
-  let tags = splits[1], actualName = splits[2];
-  return { tags, actualName };
+  // If only 1 tag is found and it is present at last, then mark the firstTag as emptyString.
+  if (resultMatchGroup.length === 1 && actualName.endsWith(edgeTag)) {
+    resultMatchGroup.unshift('');
+  }
+
+  const desiredRes = resultMatchGroup.map(match => match.replace(regex, "$1"))
+
+  resultMatchGroup.forEach(match => actualName = actualName.replace(match, ''));
+  actualName = actualName.trim();
+
+  return { firstTags: desiredRes[0] || '', lastTags: desiredRes[1] || '', actualName };
 }
 
 function alreadyTagged(tags = "", tagToFind) {
