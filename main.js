@@ -26,15 +26,24 @@ async function executeAllRequests(context, data) {
 
     const { firstTags, lastTags, actualName } = getComponentsByEdgeTag(request);
     try {
+
       if (alreadyTagged(firstTags, stopText)) {
         console.log('Stopped.');
         break;
       }
-      if (alreadyTagged(firstTags, skipText)) {
+
+      if (alreadyTagged(firstTags, skipText) || alreadyTagged(lastTags, skipText)) {
         console.log('Skipped.');
-        // results.push(constructTextRow(`Skipping request ${actualName.toUpperCase()}.`));
         continue;
       }
+
+      if (alreadyTagged(firstTags, waitText)) {
+        console.log('Waiting.');
+        const tagValue = findTagValue(firstTags, waitText);
+        results.push(constructTextRow(`Waiting for ${tagValue} seconds before running ${actualName}.`));
+        await delay((+tagValue) * 1000);
+      }
+
       const response = await context.network.sendRequest(request);
       const rowStr = constructRequestRow(actualName, request, response);
       results.push(rowStr);
@@ -43,12 +52,14 @@ async function executeAllRequests(context, data) {
         console.log('Stopped.');
         break;
       }
-      if (alreadyTagged(firstTags, waitText)) {
+
+      if (alreadyTagged(lastTags, waitText)) {
         console.log('Waiting.');
-        const tagValue = findTagValue(firstTags, waitText);
+        const tagValue = findTagValue(lastTags, waitText);
         results.push(constructTextRow(`Waiting for ${tagValue} seconds after running ${actualName}.`));
         await delay((+tagValue) * 1000);
       }
+
     } catch {
       results.push(constructTextRow(`Failed to run ${actualName.toUpperCase()}, please check the request again.`, true));
       break;
