@@ -1,6 +1,6 @@
 {
   "name": "insomnia-plugin-exec-suite",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "An Insomnia plugin for running all or conditional requests in a folder.",
   "repository": {
     "type": "git",
@@ -27,10 +27,15 @@
     "insomnia",
     "postman",
     "request",
+    "requests",
     "skip",
     "stop",
     "wait",
-    "delay"
+    "delay",
+    "folder",
+    "run",
+    "folder-run",
+    "all-requests"
   ],
   "author": "Sandy"
 }

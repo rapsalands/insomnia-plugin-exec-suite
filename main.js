@@ -2,6 +2,7 @@ const edgeTag = `\``;
 const skipText = `SKIP`;
 const stopText = `STOP`;
 const waitText = `WAIT`;
+const retryText = `RETRY`;
 const fontWhite = '#C5C5C5';
 
 module.exports.requestGroupActions = [
@@ -20,12 +21,20 @@ module.exports.requestGroupActions = [
 async function executeAllRequests(context, data) {
   const { requests } = data;
 
+  const retryMasterValue = getRetryValue(data?.requestGroup?.name || '');
+
   let results = [];
   results.push(getRowTemplate());
+  let counter = 0;
   for (const request of requests) {
 
-    const { firstTags, lastTags, actualName } = getComponentsByEdgeTag(request);
+    const { firstTags, lastTags, actualName } = getComponentsByEdgeTag(request.name);
     try {
+
+      let retryRequestValue = getRetryValue(request.name) || retryMasterValue || 0;
+      retryRequestValue = +retryRequestValue;
+
+      if (retryRequestValue < 0) retryRequestValue = 0;
 
       if (alreadyTagged(firstTags, stopText)) {
         console.log('Stopped.');
@@ -44,9 +53,20 @@ async function executeAllRequests(context, data) {
         await delay((+tagValue) * 1000);
       }
 
-      const response = await context.network.sendRequest(request);
-      const rowStr = constructRequestRow(actualName, request, response);
-      results.push(rowStr);
+      // Condition <= will make sure that it will run for at least for once.
+      for (let i = 0; i <= retryRequestValue; i++) {
+
+        if (i !== 0) {
+          results.push(constructTextRow(`Retry Attempt ${i} for request ${actualName.toUpperCase()}.`, true));
+        }
+
+        const response = await context.network.sendRequest(request);
+        results.push(constructRequestRow(actualName, request, response));
+  
+        if (response.statusCode === 200) {
+          break;
+        }
+      }
 
       if (alreadyTagged(lastTags, stopText)) {
         console.log('Stopped.');
@@ -70,6 +90,16 @@ async function executeAllRequests(context, data) {
   const html = `<html><head><style>${css}</style></head><body ><table bgcolor="#282D35">${results.join('\n')}</table></body></html>`;
 
   context.app.showGenericModalDialog('REQUESTS EXECUTION SUMMARY', { html });
+}
+
+function getRetryValue(name) {
+  const { firstTags, lastTags } = getComponentsByEdgeTag(name);
+
+  let retryValue = 0;
+  if (alreadyTagged(firstTags, retryText)) retryValue = findTagValue(firstTags, retryText);
+  else if (alreadyTagged(lastTags, retryText)) retryValue = findTagValue(lastTags, retryText);
+
+  return retryValue;
 }
 
 function getRowTemplate() {
@@ -97,9 +127,9 @@ function getTableTemplate() {
   );
 }
 
-function getComponentsByEdgeTag(request) {
+function getComponentsByEdgeTag(name) {
 
-  let originalName = request.name;
+  let originalName = name;
   let actualName = originalName;
 
   const regex = /\`(.*?)\`/gi;
@@ -129,8 +159,8 @@ function alreadyTagged(tags = "", tagToFind) {
   if (tagIndex >= 0) return true;
 
   // Wait can also have seconds associated. Determine it separately.
-  if (tagToFind === waitText) {
-    return tags.startsWith(waitText);
+  if (tagToFind === waitText || tagToFind === retryText) {
+    return tags.startsWith(tagToFind);
   }
 
   return false;
