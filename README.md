@@ -2,6 +2,22 @@
 
 An Insomnia plugin to run all or conditional requests in a folder. Via plugin, user can `SKIP` a particular request, `WAIT` after a particular request has run or can `STOP` execution at a certain request. It also supports root level and request level `RETRY` options.
 
+
+## TLDR;
+Clicking on `Execute All Requests` folder menu item will execute all requests.
+1. `SKIP`
+    a. Skips the current/marked request irrespective of being placed as prefix or suffix.
+2. `STOP`
+    a. Execution flow will stop before (if placed as prefix) or after (if placed as suffix) executing marked request.
+3. `WAIT(seconds)`
+    a. Will await before (if placed as prefix) or after (if placed as suffix) executing marked request.
+    b. Waiting numbers are given in brackets in seconds. For example `` `WAIT(10)` `` means wait for 10 seconds.
+4. `RETRY(count)`
+    a. Can be placed on folder or request.
+    b. During execution, if any request does not return `200` status code, that request will be retried again.
+    c. Retry count can be provided inside brackets.
+    d. When placed on folder, retry settings are applicable for all requests inside folder. When placed on request, settings will be appicable only for that request and will override folder settings.
+
 ## Usage
 
 1. The Plugin can be used to send all requests in a folder.
