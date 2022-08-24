@@ -49,7 +49,7 @@ async function executeAllRequests(context, data) {
       if (alreadyTagged(firstTags, waitText)) {
         console.log('Waiting.');
         const tagValue = findTagValue(firstTags, waitText);
-        results.push(constructTextRow(`Waiting for ${tagValue} seconds before running ${actualName}.`));
+        results.push(constructTextRow(`Waiting for ${tagValue} seconds before running ${actualName.toUpperCase()}.`));
         await delay((+tagValue) * 1000);
       }
 
@@ -76,7 +76,7 @@ async function executeAllRequests(context, data) {
       if (alreadyTagged(lastTags, waitText)) {
         console.log('Waiting.');
         const tagValue = findTagValue(lastTags, waitText);
-        results.push(constructTextRow(`Waiting for ${tagValue} seconds after running ${actualName}.`));
+        results.push(constructTextRow(`Waiting for ${tagValue} seconds after running ${actualName.toUpperCase()}.`));
         await delay((+tagValue) * 1000);
       }
 
