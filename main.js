@@ -63,7 +63,7 @@ async function executeAllRequests(context, data) {
         const response = await context.network.sendRequest(request);
         results.push(constructRequestRow(actualName, request, response));
   
-        if (response.statusCode === 200) {
+        if ((response.statusCode || '').toString().startsWith('2')) {
           break;
         }
       }
